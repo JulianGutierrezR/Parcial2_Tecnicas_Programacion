@@ -1,0 +1,21 @@
+public class Telefono extends Producto {
+    private String marca;
+    private String modelo;
+
+    // Constructor y métodos para acceder a los atributos y modificarlos
+}
+
+public class Laptop extends Producto {
+    private String marca;
+    private String modelo;
+    private double peso;
+
+    // Constructor y métodos para acceder a los atributos y modificarlos
+}
+
+public class Accesorio extends Producto {
+    private String tipo;
+    private String marca;
+
+    // Constructor y métodos para acceder a los atributos y modificarlos
+}
