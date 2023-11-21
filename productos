@@ -1,0 +1,156 @@
+// Clase base Producto
+public class Producto {
+    private final String nombre;
+    private final String descripcion;
+    private final double precio;
+    private final int cantidadEnInventario;
+
+    public Producto(String nombre, String descripcion, double precio, int cantidadEnInventario) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.cantidadEnInventario = cantidadEnInventario;
+    }
+
+    // Getters y setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public int getCantidadEnInventario() {
+        return cantidadEnInventario;
+    }
+}
+
+// Clase Telefono
+public class Telefono extends Producto {
+    private final String marca;
+    private final String modelo;
+
+    public Telefono(String nombre, String descripcion, double precio, int cantidadEnInventario, String marca, String modelo) {
+        super(nombre, descripcion, precio, cantidadEnventario);
+        this.marca = marca;
+        this.modelo = modelo;
+    }
+
+    // Getters y setters
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+}
+
+// Clase Laptop
+public class Laptop extends Producto {
+    private final String marca;
+    private final String modelo;
+    private final double peso;
+
+    public Laptop(String nombre, String descripcion, double precio, int cantidadEnInventario, String marca, String modelo, double peso) {
+        super(nombre, descripcion, precio, cantidadEnventario);
+        this.marca = marca;
+        this.modelo = modelo;
+        this.peso = peso;
+    }
+
+    // Getters y setters
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+}
+
+// Clase Accesorio
+public class Accesorio extends Producto {
+    private final String tipo;
+    private final String marca;
+
+    public Accesorio(String nombre, String descripcion, double precio, int cantidadEnventario, String tipo, String marca) {
+        super(nombre, descripcion, precio, cantidadEnventario);
+        this.tipo = tipo;
+        this.marca = marca;
+    }
+
+    // Getters y setters
+    public String getTipo() {
+        return tipo;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+}
+
+// Clase Cliente
+public class Cliente {
+    private final String nombre;
+    private final String direccionEnvio;
+    private final List<Pedido> pedidos;
+
+    public Cliente(String nombre, String direccionEnvio) {
+        this.nombre = nombre;
+        this.direccionEnvio = direccionEnvio;
+        this.pedidos = new ArrayList<>();
+    }
+
+    // Getters y setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getDireccionEnvio() {
+        return direccionEnvio;
+    }
+
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+}
+
+// Clase Pedido
+public class Pedido {
+    private final Cliente cliente;
+    private final List<Producto> productos;
+
+    public Pedido(Cliente cliente, List<Producto> productos) {
+        this.cliente = cliente;
+        this.productos = productos;
+    }
+
+    // Getters y setters
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+}
+
+// Clase Main
+public class Main {
+    public static void main(String[] args) {
+        // Crear instancias de las clases Producto, Cliente y Pedido
+        // Agregar productos al inventario
+        // Procesar pedidos y actualizar el inventario
+        // Mostrar la información del inventario
+    }
+}
