@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
+
 // Clase base Producto
-public class Producto {
-    private final String nombre;
-    private final String descripcion;
-    private final double precio;
-    private final int cantidadEnInventario;
+class Producto {
+    private String nombre;
+    private String descripcion;
+    private double precio;
+    private int cantidadEnInventario;
 
     public Producto(String nombre, String descripcion, double precio, int cantidadEnInventario) {
         this.nombre = nombre;
@@ -12,13 +15,8 @@ public class Producto {
         this.cantidadEnInventario = cantidadEnInventario;
     }
 
-    // Getters y setters
     public String getNombre() {
         return nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
     }
 
     public double getPrecio() {
@@ -28,82 +26,36 @@ public class Producto {
     public int getCantidadEnInventario() {
         return cantidadEnInventario;
     }
-}
 
-// Clase Telefono
-public class Telefono extends Producto {
-    private final String marca;
-    private final String modelo;
-
-    public Telefono(String nombre, String descripcion, double precio, int cantidadEnInventario, String marca, String modelo) {
-        super(nombre, descripcion, precio, cantidadEnventario);
-        this.marca = marca;
-        this.modelo = modelo;
-    }
-
-    // Getters y setters
-    public String getMarca() {
-        return marca;
-    }
-
-    public String getModelo() {
-        return modelo;
+    public void setCantidadEnInventario(int cantidadEnInventario) {
+        this.cantidadEnInventario = cantidadEnInventario;
     }
 }
 
-// Clase Laptop
-public class Laptop extends Producto {
-    private final String marca;
-    private final String modelo;
-    private final double peso;
-
-    public Laptop(String nombre, String descripcion, double precio, int cantidadEnInventario, String marca, String modelo, double peso) {
-        super(nombre, descripcion, precio, cantidadEnventario);
-        this.marca = marca;
-        this.modelo = modelo;
-        this.peso = peso;
-    }
-
-    // Getters y setters
-    public String getMarca() {
-        return marca;
-    }
-
-    public String getModelo() {
-        return modelo;
-    }
-
-    public double getPeso() {
-        return peso;
+// Clases derivadas para diferentes tipos de productos
+class Telefono extends Producto {
+    public Telefono(String nombre, String descripcion, double precio, int cantidadEnInventario) {
+        super(nombre, descripcion, precio, cantidadEnInventario);
     }
 }
 
-// Clase Accesorio
-public class Accesorio extends Producto {
-    private final String tipo;
-    private final String marca;
-
-    public Accesorio(String nombre, String descripcion, double precio, int cantidadEnventario, String tipo, String marca) {
-        super(nombre, descripcion, precio, cantidadEnventario);
-        this.tipo = tipo;
-        this.marca = marca;
+class Laptop extends Producto {
+    public Laptop(String nombre, String descripcion, double precio, int cantidadEnInventario) {
+        super(nombre, descripcion, precio, cantidadEnInventario);
     }
+}
 
-    // Getters y setters
-    public String getTipo() {
-        return tipo;
-    }
-
-    public String getMarca() {
-        return marca;
+class Accesorio extends Producto {
+    public Accesorio(String nombre, String descripcion, double precio, int cantidadEnInventario) {
+        super(nombre, descripcion, precio, cantidadEnInventario);
     }
 }
 
 // Clase Cliente
-public class Cliente {
-    private final String nombre;
-    private final String direccionEnvio;
-    private final List<Pedido> pedidos;
+class Cliente {
+    private String nombre;
+    private String direccionEnvio;
+    private List<Pedido> pedidos;
 
     public Cliente(String nombre, String direccionEnvio) {
         this.nombre = nombre;
@@ -111,13 +63,8 @@ public class Cliente {
         this.pedidos = new ArrayList<>();
     }
 
-    // Getters y setters
     public String getNombre() {
         return nombre;
-    }
-
-    public String getDireccionEnvio() {
-        return direccionEnvio;
     }
 
     public List<Pedido> getPedidos() {
@@ -126,16 +73,22 @@ public class Cliente {
 }
 
 // Clase Pedido
-public class Pedido {
-    private final Cliente cliente;
-    private final List<Producto> productos;
+class Pedido {
+    private Cliente cliente;
+    private List<Producto> productos;
+    private List<Integer> cantidades;
 
-    public Pedido(Cliente cliente, List<Producto> productos) {
+    public Pedido(Cliente cliente) {
         this.cliente = cliente;
-        this.productos = productos;
+        this.productos = new ArrayList<>();
+        this.cantidades = new ArrayList<>();
     }
 
-    // Getters y setters
+    public void agregarProducto(Producto producto, int cantidad) {
+        this.productos.add(producto);
+        this.cantidades.add(cantidad);
+    }
+
     public Cliente getCliente() {
         return cliente;
     }
@@ -143,14 +96,90 @@ public class Pedido {
     public List<Producto> getProductos() {
         return productos;
     }
+
+    public List<Integer> getCantidades() {
+        return cantidades;
+    }
 }
 
-// Clase Main
+// Clase Inventario
+class Inventario {
+    private List<Producto> productos;
+
+    public Inventario() {
+        this.productos = new ArrayList<>();
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void agregarProducto(Producto producto) {
+        this.productos.add(producto);
+    }
+}
+
+// Clase ProcesadorPedido
+class ProcesadorPedido {
+    public void procesarPedido(Pedido pedido, Inventario inventario) {
+        boolean pedidoProcesado = true;
+
+        // Verificar si hay suficiente cantidad de cada producto en el inventario
+        for (int i = 0; i < pedido.getProductos().size(); i++) {
+            Producto producto = pedido.getProductos().get(i);
+            int cantidadPedido = pedido.getCantidades().get(i);
+
+            if (inventario.getProductos().contains(producto) && producto.getCantidadEnInventario() >= cantidadPedido) {
+                // Actualizar la cantidad en el inventario
+                producto.setCantidadEnInventario(producto.getCantidadEnInventario() - cantidadPedido);
+            } else {
+                // Manejar el caso en el que el producto no está disponible en suficiente cantidad
+                System.out.println("Error: Producto no disponible en suficiente cantidad en el inventario.");
+                pedidoProcesado = false;
+                break;
+            }
+        }
+
+        // Otros pasos para procesar el pedido (envío, facturación, etc.)
+        if (pedidoProcesado) {
+            System.out.println("Pedido procesado con éxito para el cliente " + pedido.getCliente().getNombre());
+        } else {
+            System.out.println("No se pudo procesar el pedido para el cliente " + pedido.getCliente().getNombre());
+        }
+    }
+}
+
+// Clase Main para probar el código
 public class Main {
     public static void main(String[] args) {
-        // Crear instancias de las clases Producto, Cliente y Pedido
-        // Agregar productos al inventario
-        // Procesar pedidos y actualizar el inventario
-        // Mostrar la información del inventario
+        // Crear productos
+        Telefono telefono = new Telefono("Smartphone", "Teléfono inteligente", 699.99, 50);
+        Laptop laptop = new Laptop("Laptop", "Ordenador portátil", 1299.99, 30);
+        Accesorio accesorio = new Accesorio("Auriculares", "Auriculares inalámbricos", 99.99, 100);
+
+        // Crear inventario y agregar productos
+        Inventario inventario = new Inventario();
+        inventario.agregarProducto(telefono);
+        inventario.agregarProducto(laptop);
+        inventario.agregarProducto(accesorio);
+
+        // Crear cliente y pedido
+        Cliente cliente = new Cliente("John Doe", "123 Main St");
+        Pedido pedido = new Pedido(cliente);
+
+        // Agregar productos al pedido
+        pedido.agregarProducto(telefono, 2);
+        pedido.agregarProducto(laptop, 1);
+        pedido.agregarProducto(accesorio, 3);
+
+        // Procesar el pedido
+        ProcesadorPedido procesadorPedido = new ProcesadorPedido();
+        procesadorPedido.procesarPedido(pedido, inventario);
+
+        // Mostrar información del inventario después del pedido
+        System.out.println("Inventario después del pedido:");
+        for (Producto producto : inventario.getProductos()) {
+            System.out.println(producto.getNombre() + ": " + producto.getCantidadEnInventario() + " unidades");
+        }
     }
 }
