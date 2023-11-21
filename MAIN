@@ -1,0 +1,8 @@
+public class Main {
+    public static void main(String[] args) {
+        // Crear instancias de las clases Producto, Cliente y Pedido
+        // Agregar productos al inventario
+        // Procesar pedidos y actualizar el inventario
+        // Mostrar la información del inventario
+    }
+}
