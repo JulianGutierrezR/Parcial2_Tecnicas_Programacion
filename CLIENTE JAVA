@@ -1,0 +1,7 @@
+public class Cliente {
+    private String nombre;
+    private String direccionEnvio;
+    private List<Pedido> pedidos;
+
+    // Constructor y métodos para acceder a los atributos y modificarlos
+}
