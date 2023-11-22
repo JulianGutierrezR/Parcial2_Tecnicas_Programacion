@@ -1,60 +1,57 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-// Clase base Producto
-class Producto {
-    private String nombre;
-    private String descripcion;
-    private double precio;
-    private int cantidadEnInventario;
+public class productos {
 
-    public Producto(String nombre, String descripcion, double precio, int cantidadEnInventario) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.cantidadEnInventario = cantidadEnInventario;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public int getCantidadEnInventario() {
-        return cantidadEnInventario;
-    }
-
-    public void setCantidadEnInventario(int cantidadEnInventario) {
-        this.cantidadEnInventario = cantidadEnInventario;
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Gestión de Tienda Online");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.getContentPane().add(new TiendaPanel());
+            frame.pack();
+            frame.setVisible(true);
+        });
     }
 }
 
-// Clases derivadas para diferentes tipos de productos
+class Producto {
+    protected String nombre;
+    protected String descripcion;
+    protected double precio;
+    protected int cantidadInventario;
+
+    public Producto(String nombre, String descripcion, double precio, int cantidadInventario) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.cantidadInventario = cantidadInventario;
+    }
+}
+
 class Telefono extends Producto {
-    public Telefono(String nombre, String descripcion, double precio, int cantidadEnInventario) {
-        super(nombre, descripcion, precio, cantidadEnInventario);
+    public Telefono(String nombre, String descripcion, double precio, int cantidadInventario) {
+        super(nombre, descripcion, precio, cantidadInventario);
     }
 }
 
 class Laptop extends Producto {
-    public Laptop(String nombre, String descripcion, double precio, int cantidadEnInventario) {
-        super(nombre, descripcion, precio, cantidadEnInventario);
+    public Laptop(String nombre, String descripcion, double precio, int cantidadInventario) {
+        super(nombre, descripcion, precio, cantidadInventario);
     }
 }
 
 class Accesorio extends Producto {
-    public Accesorio(String nombre, String descripcion, double precio, int cantidadEnInventario) {
-        super(nombre, descripcion, precio, cantidadEnInventario);
+    public Accesorio(String nombre, String descripcion, double precio, int cantidadInventario) {
+        super(nombre, descripcion, precio, cantidadInventario);
     }
 }
 
-// Clase Cliente
 class Cliente {
-    private String nombre;
-    private String direccionEnvio;
+    protected String nombre;
+    protected String direccionEnvio;
     private List<Pedido> pedidos;
 
     public Cliente(String nombre, String direccionEnvio) {
@@ -63,8 +60,8 @@ class Cliente {
         this.pedidos = new ArrayList<>();
     }
 
-    public String getNombre() {
-        return nombre;
+    public void realizarPedido(Pedido pedido) {
+        this.pedidos.add(pedido);
     }
 
     public List<Pedido> getPedidos() {
@@ -72,114 +69,268 @@ class Cliente {
     }
 }
 
-// Clase Pedido
 class Pedido {
     private Cliente cliente;
-    private List<Producto> productos;
-    private List<Integer> cantidades;
+    private List<ProductoPedido> productosPedidos;
 
     public Pedido(Cliente cliente) {
         this.cliente = cliente;
-        this.productos = new ArrayList<>();
-        this.cantidades = new ArrayList<>();
+        this.productosPedidos = new ArrayList<>();
     }
 
     public void agregarProducto(Producto producto, int cantidad) {
-        this.productos.add(producto);
-        this.cantidades.add(cantidad);
+        ProductoPedido productoPedido = new ProductoPedido(producto, cantidad);
+        this.productosPedidos.add(productoPedido);
+    }
+
+    public void procesarPedido(Inventario inventario) {
+        for (ProductoPedido productoPedido : productosPedidos) {
+            Producto producto = productoPedido.getProducto();
+            int cantidadPedido = productoPedido.getCantidad();
+
+            if (inventario.verificarInventario(producto, cantidadPedido)) {
+                inventario.actualizarInventario(producto, cantidadPedido);
+            } else {
+                System.out.println("No hay suficiente inventario para el producto: " + producto.nombre);
+            }
+        }
+    }
+
+    public List<ProductoPedido> getProductosPedidos() {
+        return productosPedidos;
     }
 
     public Cliente getCliente() {
         return cliente;
     }
+}
 
-    public List<Producto> getProductos() {
-        return productos;
+class ProductoPedido {
+    private Producto producto;
+    private int cantidad;
+
+    public ProductoPedido(Producto producto, int cantidad) {
+        this.producto = producto;
+        this.cantidad = cantidad;
     }
 
-    public List<Integer> getCantidades() {
-        return cantidades;
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
     }
 }
 
-// Clase Inventario
 class Inventario {
     private List<Producto> productos;
+    private List<Cliente> clientes;
 
     public Inventario() {
         this.productos = new ArrayList<>();
-    }
-
-    public List<Producto> getProductos() {
-        return productos;
+        this.clientes = new ArrayList<>();
     }
 
     public void agregarProducto(Producto producto) {
         this.productos.add(producto);
     }
-}
 
-// Clase ProcesadorPedido
-class ProcesadorPedido {
-    public void procesarPedido(Pedido pedido, Inventario inventario) {
-        boolean pedidoProcesado = true;
+    public void agregarCliente(Cliente cliente) {
+        this.clientes.add(cliente);
+    }
 
-        // Verificar si hay suficiente cantidad de cada producto en el inventario
-        for (int i = 0; i < pedido.getProductos().size(); i++) {
-            Producto producto = pedido.getProductos().get(i);
-            int cantidadPedido = pedido.getCantidades().get(i);
+    public boolean verificarInventario(Producto producto, int cantidad) {
+        for (Producto p : productos) {
+            if (p.equals(producto) && p.cantidadInventario >= cantidad) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-            if (inventario.getProductos().contains(producto) && producto.getCantidadEnInventario() >= cantidadPedido) {
-                // Actualizar la cantidad en el inventario
-                producto.setCantidadEnInventario(producto.getCantidadEnInventario() - cantidadPedido);
-            } else {
-                // Manejar el caso en el que el producto no está disponible en suficiente cantidad
-                System.out.println("Error: Producto no disponible en suficiente cantidad en el inventario.");
-                pedidoProcesado = false;
+    public void actualizarInventario(Producto producto, int cantidad) {
+        for (Producto p : productos) {
+            if (p.equals(producto)) {
+                p.cantidadInventario -= cantidad;
                 break;
             }
         }
+    }
 
-        // Otros pasos para procesar el pedido (envío, facturación, etc.)
-        if (pedidoProcesado) {
-            System.out.println("Pedido procesado con éxito para el cliente " + pedido.getCliente().getNombre());
-        } else {
-            System.out.println("No se pudo procesar el pedido para el cliente " + pedido.getCliente().getNombre());
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public List<Cliente> getClientes() {
+        return clientes;
+    }
+
+    // Nuevo método para obtener los pedidos
+    public List<Pedido> getPedidos() {
+        List<Pedido> pedidos = new ArrayList<>();
+        for (Cliente cliente : clientes) {
+            pedidos.addAll(cliente.getPedidos());
         }
+        return pedidos;
     }
 }
 
-// Clase Main para probar el código
-public class Main {
-    public static void main(String[] args) {
-        // Crear productos
-        Telefono telefono = new Telefono("Smartphone", "Teléfono inteligente", 699.99, 50);
-        Laptop laptop = new Laptop("Laptop", "Ordenador portátil", 1299.99, 30);
-        Accesorio accesorio = new Accesorio("Auriculares", "Auriculares inalámbricos", 99.99, 100);
+class TiendaPanel extends JPanel {
+    private Inventario inventario;
+    private JTextArea textAreaResultado;
 
-        // Crear inventario y agregar productos
-        Inventario inventario = new Inventario();
-        inventario.agregarProducto(telefono);
-        inventario.agregarProducto(laptop);
-        inventario.agregarProducto(accesorio);
+    public TiendaPanel() {
+        this.inventario = new Inventario();
+        inicializarInterfaz();
+    }
 
-        // Crear cliente y pedido
-        Cliente cliente = new Cliente("John Doe", "123 Main St");
-        Pedido pedido = new Pedido(cliente);
+    private void inicializarInterfaz() {
+        JButton agregarProductoButton = new JButton("Agregar Producto");
+        agregarProductoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Abrir un cuadro de diálogo para ingresar información del producto
+                String nombre = JOptionPane.showInputDialog("Ingrese el nombre del producto:");
+                String descripcion = JOptionPane.showInputDialog("Ingrese la descripción del producto:");
+                double precio = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio del producto:"));
+                int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la cantidad en inventario:"));
 
-        // Agregar productos al pedido
-        pedido.agregarProducto(telefono, 2);
-        pedido.agregarProducto(laptop, 1);
-        pedido.agregarProducto(accesorio, 3);
+                Producto nuevoProducto = new Producto(nombre, descripcion, precio, cantidad);
+                inventario.agregarProducto(nuevoProducto);
 
-        // Procesar el pedido
-        ProcesadorPedido procesadorPedido = new ProcesadorPedido();
-        procesadorPedido.procesarPedido(pedido, inventario);
+                // Muestra el resultado en el área de texto
+                textAreaResultado.append("Producto agregado al inventario: " + nuevoProducto.nombre + "\n");
 
-        // Mostrar información del inventario después del pedido
-        System.out.println("Inventario después del pedido:");
-        for (Producto producto : inventario.getProductos()) {
-            System.out.println(producto.getNombre() + ": " + producto.getCantidadEnInventario() + " unidades");
+                // Actualiza la información de los pedidos al lado
+                mostrarPedidosAlLado();
+            }
+        });
+
+        JButton agregarPedidoButton = new JButton("Agregar Pedido");
+        agregarPedidoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Abrir un cuadro de diálogo para ingresar información del pedido
+                String nombreCliente = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+                String direccionEnvio = JOptionPane.showInputDialog("Ingrese la dirección de envío:");
+
+                Cliente cliente = new Cliente(nombreCliente, direccionEnvio);
+                inventario.agregarCliente(cliente);
+
+                Pedido pedido = new Pedido(cliente);
+
+                // Agregar productos al pedido
+                String respuesta;
+                do {
+                    String nombreProducto = JOptionPane.showInputDialog("Ingrese el nombre del producto:");
+                    int cantidadProducto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la cantidad del producto:"));
+
+                    // Buscar el producto en el inventario
+                    Producto producto = null;
+                    for (Producto p : inventario.getProductos()) {
+                        if (p.nombre.equals(nombreProducto)) {
+                            producto = p;
+                            break;
+                        }
+                    }
+
+                    if (producto != null) {
+                        pedido.agregarProducto(producto, cantidadProducto);
+                        respuesta = JOptionPane.showInputDialog("¿Desea agregar otro producto? (S/N):");
+                    } else {
+                        respuesta = JOptionPane.showInputDialog("Producto no encontrado. ¿Desea intentarlo de nuevo? (S/N):");
+                    }
+
+                } while (respuesta != null && respuesta.equalsIgnoreCase("S"));
+
+                // Agregar el pedido al cliente
+                cliente.realizarPedido(pedido);
+
+                // Muestra el resultado en el área de texto
+                textAreaResultado.append("Pedido agregado para el cliente: " + cliente.nombre + "\n");
+
+                // Actualiza la información de los pedidos al lado
+                mostrarPedidosAlLado();
+            }
+        });
+
+        JButton procesarPedidosButton = new JButton("Procesar Pedidos");
+        procesarPedidosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Mostrar una ventana con la lista de pedidos
+                JFrame framePedidos = new JFrame("Lista de Pedidos");
+                framePedidos.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+                JTextArea textAreaPedidos = new JTextArea(10, 30);
+                JScrollPane scrollPanePedidos = new JScrollPane(textAreaPedidos);
+
+                // Obtener la lista de pedidos
+                List<Pedido> pedidos = obtenerPedidos();
+                for (Pedido pedido : pedidos) {
+                    textAreaPedidos.append("Cliente: " + pedido.getCliente().nombre + "\n");
+                    List<ProductoPedido> productosPedidos = pedido.getProductosPedidos();
+                    for (ProductoPedido productoPedido : productosPedidos) {
+                        textAreaPedidos.append("Producto: " + productoPedido.getProducto().nombre +
+                                " - Cantidad: " + productoPedido.getCantidad() + "\n");
+                    }
+                    textAreaPedidos.append("\n");
+                }
+
+                framePedidos.getContentPane().add(scrollPanePedidos);
+                framePedidos.pack();
+                framePedidos.setVisible(true);
+            }
+        });
+
+        JButton mostrarInventarioButton = new JButton("Mostrar Inventario");
+        mostrarInventarioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Limpia el área de texto antes de mostrar el inventario
+                textAreaResultado.setText("");
+
+                // Obtiene la lista de productos del inventario y la muestra en el área de texto
+                List<Producto> productos = inventario.getProductos();
+                for (Producto producto : productos) {
+                    textAreaResultado.append("Nombre: " + producto.nombre +
+                            " - Cantidad en inventario: " + producto.cantidadInventario + "\n");
+                }
+            }
+        });
+
+        textAreaResultado = new JTextArea(10, 30);
+        JScrollPane scrollPane = new JScrollPane(textAreaResultado);
+
+        // Agregar componentes al panel
+        add(agregarProductoButton);
+        add(agregarPedidoButton);
+        add(procesarPedidosButton);
+        add(mostrarInventarioButton);
+        add(scrollPane);
+    }
+
+    private List<Pedido> obtenerPedidos() {
+        // Obtener la lista de pedidos de todos los clientes
+        return inventario.getPedidos();
+    }
+
+    private void mostrarPedidosAlLado() {
+        textAreaResultado.append("----- Pedidos ----- \n");
+
+        // Obtener la lista de pedidos
+        List<Pedido> pedidos = obtenerPedidos();
+        for (Pedido pedido : pedidos) {
+            textAreaResultado.append("Cliente: " + pedido.getCliente().nombre + "\n");
+            List<ProductoPedido> productosPedidos = pedido.getProductosPedidos();
+            for (ProductoPedido productoPedido : productosPedidos) {
+                textAreaResultado.append("Producto: " + productoPedido.getProducto().nombre +
+                        " - Cantidad: " + productoPedido.getCantidad() + "\n");
+            }
+            textAreaResultado.append("\n");
         }
+
+        textAreaResultado.append("-------------------- \n");
     }
 }
